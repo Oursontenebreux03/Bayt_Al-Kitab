@@ -12,15 +12,45 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-      - ./docker/init-laravel.sh:/usr/local/bin/init-laravel.sh
     networks:
       - bayt-al-kitab-network
     environment:
       - WEB_DOCUMENT_ROOT=/var/www/public
     command: >
       sh -c "
-        chmod +x /usr/local/bin/init-laravel.sh &&
-        /usr/local/bin/init-laravel.sh &&
+        # Permissions immédiates
+        chown -R www-data:www-data /var/www &&
+        chmod -R 775 /var/www/storage /var/www/bootstrap/cache &&
+        
+        # Créer la base de données
+        mkdir -p /var/www/database &&
+        touch /var/www/database/database.sqlite &&
+        chown www-data:www-data /var/www/database/database.sqlite &&
+        chmod 664 /var/www/database/database.sqlite &&
+        
+        # Installer Composer si nécessaire
+        if [ ! -d /var/www/vendor ]; then
+          composer install --no-dev --optimize-autoloader
+        fi &&
+        
+        # Configuration Laravel
+        if [ ! -f /var/www/.env ]; then
+          cp /var/www/.env.example /var/www/.env &&
+          php artisan key:generate
+        fi &&
+        
+        # Lien de stockage
+        php artisan storage:link &&
+        
+        # Migrations et seeders
+        php artisan migrate --force &&
+        php artisan db:seed --force &&
+        
+        # Permissions finales
+        chown -R www-data:www-data /var/www &&
+        chmod -R 775 /var/www/storage /var/www/bootstrap/cache &&
+        
+        # Démarrer les services
         /entrypoint supervisord
       "
 
