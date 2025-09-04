@@ -29,6 +29,8 @@ services:
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - bayt-al-kitab-network
+    # Alternative: utiliser une image pré-construite si build échoue
+    # image: webdevops/php-nginx:8.2-alpine
 
   # Database Service (SQLite for simplicity)
   db:
