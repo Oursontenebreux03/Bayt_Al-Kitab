@@ -5,9 +5,9 @@ echo "🚀 Initialisation de Laravel..."
 # Aller dans le répertoire de l'application
 cd /var/www
 
-# Installer les dépendances Composer
+# Installer les dépendances Composer (avec dev pour Faker)
 echo "📦 Installation des dépendances Composer..."
-composer install --no-dev --optimize-autoloader
+composer install --optimize-autoloader
 
 # Créer le fichier .env s'il n'existe pas
 if [ ! -f .env ]; then
@@ -16,9 +16,21 @@ if [ ! -f .env ]; then
     php artisan key:generate
 fi
 
+# Créer le répertoire de base de données et définir les permissions
+echo "🗄️ Configuration de la base de données..."
+mkdir -p /var/www/database
+touch /var/www/database/database.sqlite
+chown -R www-data:www-data /var/www/database
+chmod -R 775 /var/www/database
+
 # Créer le lien de stockage
 echo "🔗 Création du lien de stockage..."
 php artisan storage:link
+
+# Définir les permissions pour storage et bootstrap/cache
+echo "🔐 Définition des permissions..."
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Exécuter les migrations
 echo "🗄️ Exécution des migrations..."
@@ -27,10 +39,5 @@ php artisan migrate --force
 # Exécuter les seeders
 echo "🌱 Exécution des seeders..."
 php artisan db:seed --force
-
-# Définir les permissions
-echo "🔐 Définition des permissions..."
-chown -R www-data:www-data /var/www
-chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 echo "✅ Laravel initialisé avec succès!"
