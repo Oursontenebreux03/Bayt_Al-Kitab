@@ -185,15 +185,11 @@ Tous les paramètres sont configurables via le panneau d'administration :
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
 
-## 📝 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 📞 Support
 
 Pour toute question ou problème :
 - Email : contact@bayt-al-kitab.com
-- Issues GitHub : [Lien vers les issues]
 
 ---
 
