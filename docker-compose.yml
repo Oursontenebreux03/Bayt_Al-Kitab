@@ -12,10 +12,17 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker/init-laravel.sh:/usr/local/bin/init-laravel.sh
     networks:
       - bayt-al-kitab-network
     environment:
       - WEB_DOCUMENT_ROOT=/var/www/public
+    command: >
+      sh -c "
+        chmod +x /usr/local/bin/init-laravel.sh &&
+        /usr/local/bin/init-laravel.sh &&
+        /entrypoint supervisord
+      "
 
   # Database Service (SQLite for simplicity)
   db:
