@@ -5,6 +5,11 @@ echo "🚀 Initialisation de Laravel..."
 # Aller dans le répertoire de l'application
 cd /var/www
 
+# Définir les permissions AVANT tout le reste
+echo "🔐 Définition des permissions initiales..."
+chown -R www-data:www-data /var/www
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 # Installer les dépendances Composer (avec dev pour Faker)
 echo "📦 Installation des dépendances Composer..."
 composer install --optimize-autoloader
@@ -27,10 +32,10 @@ chmod -R 775 /var/www/database
 echo "🔗 Création du lien de stockage..."
 php artisan storage:link
 
-# Définir les permissions pour storage et bootstrap/cache
-echo "🔐 Définition des permissions..."
-chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+# Redéfinir les permissions après les opérations
+echo "🔐 Redéfinition des permissions..."
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache /var/www/database
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache /var/www/database
 
 # Exécuter les migrations
 echo "🗄️ Exécution des migrations..."
@@ -39,5 +44,10 @@ php artisan migrate --force
 # Exécuter les seeders
 echo "🌱 Exécution des seeders..."
 php artisan db:seed --force
+
+# Permissions finales
+echo "🔐 Permissions finales..."
+chown -R www-data:www-data /var/www
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache /var/www/database
 
 echo "✅ Laravel initialisé avec succès!"
